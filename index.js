@@ -60,14 +60,20 @@ FeedRead.identify = function(xml) {
 // 
 FeedRead.get = function(feed_url, callback) {
   request(feed_url, {timeout: 5000}, function(err, res, body) {
-    if (err) return callback(err);
-    var type = FeedRead.identify(body);
-    if (type == "atom") {
-      FeedRead.atom(body, feed_url, callback);
-    } else if (type == "rss") {
-      FeedRead.rss(body, feed_url, callback);
-    } else {
-      return callback(new Error("Body is not RSS or ATOM", "<"+ feed_url +">", res.statusCode));
+    try {
+	    if (err) return callback(err);
+	    var type = FeedRead.identify(body);
+	    if (type == "atom") {
+		    FeedRead.atom(body, feed_url, callback);
+	    }
+	    else if (type == "rss") {
+		    FeedRead.rss(body, feed_url, callback);
+	    }
+	    else {
+		    return callback(new Error("Body is not RSS or ATOM", "<" + feed_url + ">", res.statusCode));
+	    }
+    }catch (e) {
+	    return callback(e);
     }
   });
 };
